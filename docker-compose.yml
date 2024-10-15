@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  prolog-reader-mqtt:
+    build:
+      context: ./mqtt
+      dockerfile: Dockerfile.rabbitmq
+    working_dir: /app
+    command: swipl reader-mqtt.pl

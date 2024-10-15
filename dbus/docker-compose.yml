@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  dbus:
+    build:
+      dockerfile: Dockerfile.dbus
+    environment:
+      - DBUS_SESSION_BUS_ADDRESS=tcp:host=dbus-reader,port=55556,family=ipv4

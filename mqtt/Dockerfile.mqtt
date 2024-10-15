@@ -1,0 +1,33 @@
+# Start from the base Prolog image
+FROM prolog-base AS mqtt-builder
+
+# Install Mosquitto libraries
+RUN apk add --no-cache \
+    mosquitto-clients \
+    mosquitto-dev
+
+
+RUN apk add valgrind
+
+
+# Copy the application files into the container
+COPY . /app/
+
+# Compile the C++ code using the provided Makefile
+RUN make
+
+# Set the LD_LIBRARY_PATH to include SWI-Prolog and Mosquitto libraries
+ENV LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/x86_64-linux/:/usr/lib/
+
+# Final stage
+FROM mqtt-builder AS mqtt-runtime
+
+# Copy the compiled files from the build stage
+COPY --from=mqtt-builder /app /app
+
+# Set the working directory
+WORKDIR /app
+
+
+# Run the Prolog script
+CMD ["swipl", "mqtt.pl"]

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management  # RabbitMQ image with management console
+    ports:
+      - "5672:5672"               # Default RabbitMQ port
+      - "15672:15672"             # Management console port
+
+  prolog-reader:
+    build:
+      context: .
+      dockerfile: Dockerfile.rabbitmq
+    working_dir: /app
+    command: >
+      bash -c "until nc -z rabbitmq 5672; do
+                echo 'Waiting for RabbitMQ...';
+                sleep 1;
+               done;
+               echo 'RabbitMQ is up!';
+               swipl reader.pl"
+    depends_on:
+      - rabbitmq
+
+  prolog-writer:
+    build:
+      context: .
+      dockerfile: Dockerfile.rabbitmq
+    working_dir: /app
+    command: >
+      bash -c "until nc -z rabbitmq 5672; do
+                echo 'Waiting for RabbitMQ...';
+                sleep 1;
+               done;
+               echo 'RabbitMQ is up!';
+               swipl writer.pl"
+    depends_on:
+      - rabbitmq

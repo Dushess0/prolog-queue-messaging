@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"   # MQTT port
+      - "9001:9001"   # WebSockets port (optional)
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    restart: unless-stopped
+
+  reader-mqtt:
+    build:
+      context: .
+      dockerfile: Dockerfile.mqtt
+    depends_on:
+      - mqtt-broker
+    volumes:
+      - ./reader.pl:/app/reader.pl
+    command: >
+      bash -c "until nc -z mqtt-broker 1883; do
+                echo 'Waiting for MQTT broker...';
+                sleep 1;
+               done;
+               echo 'MQTT broker is up!';
+               swipl reader.pl"
+
+  writer-mqtt:
+    build:
+      context: .
+      dockerfile: Dockerfile.mqtt
+    depends_on:
+      - mqtt-broker
+    volumes:
+      - ./writer.pl:/app/writer.pl
+    command: >
+      bash -c "until nc -z mqtt-broker 1883; do
+                echo 'Waiting for MQTT broker...';
+                sleep 1;
+               done;
+               echo 'MQTT broker is up!';
+               swipl writer.pl"

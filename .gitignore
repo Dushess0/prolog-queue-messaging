@@ -1,0 +1,46 @@
+# Ignore object and binary files
+*.o
+*.so
+*.out
+
+# Ignore backup and temporary files
+*~
+*.swp
+
+# Ignore SWI-Prolog compiled files
+*.qlf
+
+# Ignore Docker-related files and directories
+**/node_modules
+**/dist
+**/tmp
+**/build
+**/logs
+docker-compose.override.yml
+
+# Ignore log files and databases
+*.log
+*.sqlite3
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE and editor files
+.vscode/
+.idea/
+*.iml
+
+# Ignore compiled shared objects
+/app/mqtt.so
+
+# Ignore Makefile output
+/app/mqtt_wrapper.o
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore environment variables file
+.env
+.vscode/settings.json

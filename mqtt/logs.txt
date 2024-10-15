@@ -1,0 +1,30 @@
+qtt-server  | 1725126314: mosquitto version 2.0.18 starting
+mqtt-server  | 1725126314: Config loaded from /mosquitto/config/mosquitto.conf.
+mqtt-server  | 1725126314: Opening ipv4 listen socket on port 1883.                                                                                                                                             
+mqtt-server  | 1725126314: mosquitto version 2.0.18 running
+mqtt-server  | 1725126314: New connection from 172.18.0.3:36486 on port 1883.                                                                                                                                   
+mqtt-server  | 1725126314: New connection from 172.18.0.4:59330 on port 1883.
+writer       | Connection to mqtt-broker (172.18.0.2) 1883 port [tcp/*] succeeded!                                                                                                                              
+reader       | Connection to mqtt-broker (172.18.0.2) 1883 port [tcp/*] succeeded!                                                                                                                              
+mqtt-server  | 1725126314: Client <unknown> closed its connection.
+writer       | MQTT broker is up!                                                                                                                                                                               
+reader       | MQTT broker is up!                                                                                                                                                                               
+mqtt-server  | 1725126314: Client <unknown> closed its connection.                                                                                                                                              
+mqtt-server  | 1725126314: New connection from 172.18.0.4:59344 on port 1883.                                                                                                                                   
+mqtt-server  | 1725126314: New connection from 172.18.0.3:36498 on port 1883.
+reader       | Subscribed to topic: test/topic                                                                                                                                                                  
+mqtt-server  | 1725126314: New client connected from 172.18.0.4:59344 as auto-E8971433-10BE-7570-180D-4EB2EC16AD54 (p2, c1, k60).                                                                               
+reader       | Listening for messages...
+mqtt-server  | 1725126314: No will message specified.                                                                                                                                                           
+reader       | Received message on topic test/topic: Hello from Prolog with C++!                                                                                                                                
+mqtt-server  | 1725126314: Sending CONNACK to auto-E8971433-10BE-7570-180D-4EB2EC16AD54 (0, 0)                                                                                                                  
+mqtt-server  | 1725126314: New client connected from 172.18.0.3:36498 as auto-4FAA7341-9602-ED0E-A925-C1AB9BF7026D (p2, c1, k60).
+mqtt-server  | 1725126314: No will message specified.                                                                                                                                                           
+mqtt-server  | 1725126314: Sending CONNACK to auto-4FAA7341-9602-ED0E-A925-C1AB9BF7026D (0, 0)                                                                                                                  
+mqtt-server  | 1725126314: Received SUBSCRIBE from auto-E8971433-10BE-7570-180D-4EB2EC16AD54                                                                                                                    
+mqtt-server  | 1725126314:      test/topic (QoS 0)
+mqtt-server  | 1725126314: auto-E8971433-10BE-7570-180D-4EB2EC16AD54 0 test/topic                                                                                                                               
+mqtt-server  | 1725126314: Sending SUBACK to auto-E8971433-10BE-7570-180D-4EB2EC16AD54                                                                                                                          
+mqtt-server  | 1725126314: Received PUBLISH from auto-4FAA7341-9602-ED0E-A925-C1AB9BF7026D (d0, q0, r0, m0, 'test/topic', ... (27 bytes))                                                                       
+mqtt-server  | 1725126314: Sending PUBLISH to auto-E8971433-10BE-7570-180D-4EB2EC16AD54 (d0, q0, r0, m0, 'test/topic', ... (27 bytes))                                                                          
+mqtt-server  | 1725126314: Client auto-4FAA7341-9602-ED0E-A925-C1AB9BF7026D closed its connection.

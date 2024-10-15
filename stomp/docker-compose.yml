@@ -1,0 +1,45 @@
+services:
+  # Define the STOMP broker service using ActiveMQ
+  stomp-broker:
+    image: rmohr/activemq:latest
+    container_name: stomp-broker
+    ports:
+      - "61613:61613"  # STOMP port
+      - "8161:8161"    # Web console port (optional)
+    environment:
+      - ACTIVEMQ_ADMIN_LOGIN=admin
+      - ACTIVEMQ_ADMIN_PASSWORD=admin
+
+  # Define the writer service
+  writer:
+    build:
+      dockerfile: ../Dockerfile.prolog
+    container_name: writer
+    depends_on:
+      - stomp-broker
+    volumes:
+      - ./writer.pl:/app/writer.pl
+    command: >
+      bash -c "until nc -z stomp-broker 61613; do
+                echo 'Waiting for STOMP broker...';
+                sleep 1;
+               done;
+               echo 'STOMP broker is up!';
+               swipl writer.pl"
+
+  # Define the reader service
+  reader:
+    build:
+      dockerfile: ../Dockerfile.prolog
+    container_name: reader
+    depends_on:
+      - stomp-broker
+    volumes:
+      - ./reader.pl:/app/reader.pl
+    command: >
+      bash -c "until nc -z stomp-broker 61613; do
+                echo 'Waiting for STOMP broker...';
+                sleep 1;
+               done;
+               echo 'STOMP broker is up!';
+               swipl reader.pl"

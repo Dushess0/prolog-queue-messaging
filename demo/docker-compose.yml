@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  prolog-mqtt:
+    build:
+      context: ../mqtt   # Use the mqtt directory containing Dockerfile.mqtt
+      dockerfile: Dockerfile.mqtt  # Specify the Dockerfile located in the mqtt folder
+    container_name: prolog-mqtt
+    volumes:
+      - ./mqtt_reader.pl:/app/mqtt.pl  # Mount the mqtt.pl Prolog file from the demo folder
+    command: >
+      bash -c "swipl /app/mqtt.pl"  # Run the Prolog script

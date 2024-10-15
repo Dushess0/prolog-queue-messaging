@@ -1,0 +1,35 @@
+# Start from the base Prolog image
+FROM prolog-base AS dbus-base
+
+# Install D-Bus libraries and daemon
+RUN apk add --no-cache dbus dbus-dev
+
+# Set the working directory
+WORKDIR /app
+
+# Add a build argument to force rebuild of the make step
+# This argument can be adjusted when needed to force the rebuild
+ARG FORCE_REBUILD=1
+
+# Copy the application files into the container
+COPY . /app/
+
+# Copy D-Bus configuration files
+COPY dbus-session.conf /etc/dbus-1/session.conf
+COPY dbus-system.conf /etc/dbus-1/system.conf
+
+# Compile the C++ code using the provided Makefile
+# The FORCE_REBUILD argument is used here to invalidate the cache
+RUN echo "Forcing rebuild step: $FORCE_REBUILD" && make
+
+# Set the LD_LIBRARY_PATH to include SWI-Prolog libraries
+ENV LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/x86_64-linux/:/usr/lib/
+
+# Copy the entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+
+# Ensure the entrypoint script is executable
+RUN chmod +x /app/entrypoint.sh
+
+# Set the entrypoint to start the reader and writer sequentially
+ENTRYPOINT ["/app/entrypoint.sh"]
