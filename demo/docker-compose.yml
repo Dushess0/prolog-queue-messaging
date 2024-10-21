@@ -76,16 +76,3 @@ services:
     container_name: dbus
     environment:
       - DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/session_bus_socket
-
-  # D-Bus Reader
-  prolog-dbus:
-    build:
-      context: ../dbus
-      dockerfile: Dockerfile.dbus
-    container_name: prolog-dbus
-    volumes:
-      - ./dbus_reader.pl:/app/reader.pl
-    command: >
-      bash -c "swipl /app/reader.pl"
-    depends_on:
-      - dbus
