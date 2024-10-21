@@ -1,0 +1,33 @@
+FROM swipl:latest
+
+RUN apt-get update && apt-get install -y \
+    librabbitmq-dev \
+    libdbus-1-dev \
+    dbus \
+    make \
+    g++
+
+WORKDIR /app
+
+COPY ../rabbitmq/src /app/src/rabbitmq
+COPY ../rabbitmq/Makefile /app/src/rabbitmq/
+
+COPY ../dbus/source /app/src/dbus
+COPY ../dbus/Makefile /app/src/dbus/
+
+COPY ../dbus/dbus-session.conf /etc/dbus-1/session.conf
+COPY ../dbus/dbus-system.conf /etc/dbus-1/system.conf
+
+WORKDIR /app/src/rabbitmq
+RUN make
+
+WORKDIR /app/src/dbus
+RUN make
+
+ENV LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/x86_64-linux/:/usr/lib/
+
+COPY rabbitmq_dbus.pl /app/reader.pl
+
+WORKDIR /app
+
+CMD ["swipl", "reader.pl"]

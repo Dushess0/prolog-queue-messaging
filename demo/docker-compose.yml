@@ -1,12 +1,91 @@
 version: '3.8'
 
 services:
+  # MQTT to STOMP
   prolog-mqtt:
     build:
-      context: ../mqtt   # Use the mqtt directory containing Dockerfile.mqtt
-      dockerfile: Dockerfile.mqtt  # Specify the Dockerfile located in the mqtt folder
+      context: ../mqtt
+      dockerfile: Dockerfile.mqtt
     container_name: prolog-mqtt
     volumes:
-      - ./mqtt_reader.pl:/app/mqtt.pl  # Mount the mqtt.pl Prolog file from the demo folder
+      - ./mqtt_stomp.pl:/app/mqtt.pl
     command: >
-      bash -c "swipl /app/mqtt.pl"  # Run the Prolog script
+      bash -c "swipl /app/mqtt.pl"
+    depends_on:
+      - stomp
+
+  # STOMP Broker Service
+  stomp:
+    image: rmohr/activemq
+    container_name: stomp-broker
+    ports:
+      - "61613:61613"  # STOMP port
+      - "8161:8161"    # Web console port
+
+  # STOMP to RabbitMQ
+  prolog-stomp:
+    build:
+      context: ../rabbitmq
+      dockerfile: Dockerfile.rabbitmq
+    container_name: prolog-stomp
+    volumes:
+      - ./stomp_rabbitmq.pl:/app/reader.pl
+    command: >
+      bash -c "until nc -z stomp-broker 61613; do
+                echo 'Waiting for STOMP...';
+                sleep 1;
+               done;
+               echo 'STOMP is up!';
+               swipl /app/reader.pl"
+    depends_on:
+      - stomp
+      - rabbitmq
+
+  # RabbitMQ Service
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP port
+      - "15672:15672"   # Management console port
+
+  # RabbitMQ to D-Bus
+  prolog-rabbitmq-dbus:
+    build:
+      context: .
+      dockerfile: Dockerfile.rabbitmq_dbus
+    container_name: prolog-rabbitmq-dbus
+    volumes:
+      - ./rabbitmq_dbus.pl:/app/reader.pl
+    command: >
+      bash -c "until nc -z rabbitmq 5672; do
+                echo 'Waiting for RabbitMQ...';
+                sleep 1;
+               done;
+               echo 'RabbitMQ is up!';
+               swipl /app/reader.pl"
+    depends_on:
+      - rabbitmq
+      - dbus
+
+  # D-Bus Service
+  dbus:
+    build:
+      context: ../dbus
+      dockerfile: Dockerfile.dbus
+    container_name: dbus
+    environment:
+      - DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/session_bus_socket
+
+  # D-Bus Reader
+  prolog-dbus:
+    build:
+      context: ../dbus
+      dockerfile: Dockerfile.dbus
+    container_name: prolog-dbus
+    volumes:
+      - ./dbus_reader.pl:/app/reader.pl
+    command: >
+      bash -c "swipl /app/reader.pl"
+    depends_on:
+      - dbus
