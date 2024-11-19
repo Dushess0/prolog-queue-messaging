@@ -1,5 +1,6 @@
 # Start from the base Prolog image
-FROM prolog-base AS rabbitmq-builder
+FROM dushess/prolog-queue-communication:base AS rabbitmq-builder
+
 
 # Install RabbitMQ C development libraries
 RUN apk add --no-cache \

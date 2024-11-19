@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image to Docker Hub
+name: Build and Publish Multiple Docker Images to Docker Hub
 
 on:
   push:
@@ -22,12 +22,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build the Docker image
-      - name: Build Docker Image
+      # Build and Push Base Prolog Image
+      - name: Build and Push Base Prolog Image
         run: |
-          docker build -f Dockerfile.prolog -t dushess/prolog-queue-communication:latest .
+          docker build -f Dockerfile.prolog -t dushess/prolog-queue-communication:base .
+          docker push dushess/prolog-queue-communication:base
 
-      # Push the Docker image to Docker Hub
-      - name: Push Docker Image
+      # Build and Push dbus Image
+      - name: Build and Push dbus Image
         run: |
-          docker push dushess/prolog-queue-communication:latest
+          docker build -f dbus/Dockerfile.dbus -t dushess/prolog-queue-communication:dbus .
+          docker push dushess/prolog-queue-communication:dbus
+
+      # Build and Push mqtt Image
+      - name: Build and Push mqtt Image
+        run: |
+          docker build -f mqtt/Dockerfile.mqtt -t dushess/prolog-queue-communication:mqtt .
+          docker push dushess/prolog-queue-communication:mqtt
+
+      # Build and Push rabbitmq Image
+      - name: Build and Push rabbitmq Image
+        run: |
+          docker build -f rabbitmq/Dockerfile.rabbitmq -t dushess/prolog-queue-communication:rabbitmq .
+          docker push dushess/prolog-queue-communication:rabbitmq

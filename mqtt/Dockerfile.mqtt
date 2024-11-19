@@ -1,5 +1,5 @@
 # Start from the base Prolog image
-FROM prolog-base AS mqtt-builder
+FROM dushess/prolog-queue-communication:base AS mqtt-builder
 
 # Install Mosquitto libraries
 RUN apk add --no-cache \
