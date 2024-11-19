@@ -31,23 +31,27 @@ jobs:
       # Build and Push dbus Image
       - name: Build and Push dbus Image
         run: |
-          docker build -f dbus/Dockerfile.dbus -t dushess/prolog-queue-communication:dbus .
+          cd dbus
+          docker build -f Dockerfile.dbus -t dushess/prolog-queue-communication:dbus .
           docker push dushess/prolog-queue-communication:dbus
 
       # Build and Push mqtt Image
       - name: Build and Push mqtt Image
         run: |
-          docker build -f mqtt/Dockerfile.mqtt -t dushess/prolog-queue-communication:mqtt .
+          cd mqtt
+          docker build -f Dockerfile.mqtt -t dushess/prolog-queue-communication:mqtt .
           docker push dushess/prolog-queue-communication:mqtt
 
       # Build and Push rabbitmq Image
       - name: Build and Push rabbitmq Image
         run: |
-          docker build -f rabbitmq/Dockerfile.rabbitmq -t dushess/prolog-queue-communication:rabbitmq .
+          cd rabbitmq
+          docker build -f Dockerfile.rabbitmq -t dushess/prolog-queue-communication:rabbitmq .
           docker push dushess/prolog-queue-communication:rabbitmq
 
       # Build and Push stomp Image
       - name: Build and Push stomp Image
         run: |
-          docker build -f stomp/Dockerfile.stomp -t dushess/prolog-queue-communication:stomp .
+          cd stomp
+          docker build -f Dockerfile.stomp -t dushess/prolog-queue-communication:stomp .
           docker push dushess/prolog-queue-communication:stomp
