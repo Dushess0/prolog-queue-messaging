@@ -1,4 +1,4 @@
-name: Build and Publish Multiple Docker Images to Docker Hub
+name: Build and Publish Docker Images
 
 on:
   push:
@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
-      - name: Checkout code
+      # Checkout the main repository
+      - name: Checkout main repository
         uses: actions/checkout@v3
 
       # Log in to Docker Hub
@@ -28,20 +28,26 @@ jobs:
           docker build -f Dockerfile.prolog -t dushess/prolog-queue-communication:base .
           docker push dushess/prolog-queue-communication:base
 
-      # Build and Push dbus Image
-      - name: Build and Push dbus Image
+      # Clone and Build dbus Repository
+      - name: Clone and Build dbus Repository
         run: |
-          docker build -f dbus/Dockerfile.dbus -t dushess/prolog-queue-communication:dbus .
+          git clone https://github.com/username/dbus-repo.git dbus
+          cd dbus
+          docker build -f Dockerfile.dbus -t dushess/prolog-queue-communication:dbus .
           docker push dushess/prolog-queue-communication:dbus
 
-      # Build and Push mqtt Image
-      - name: Build and Push mqtt Image
+      # Clone and Build mqtt Repository
+      - name: Clone and Build mqtt Repository
         run: |
-          docker build -f mqtt/Dockerfile.mqtt -t dushess/prolog-queue-communication:mqtt .
+          git clone https://github.com/username/mqtt-repo.git mqtt
+          cd mqtt
+          docker build -f Dockerfile.mqtt -t dushess/prolog-queue-communication:mqtt .
           docker push dushess/prolog-queue-communication:mqtt
 
-      # Build and Push rabbitmq Image
-      - name: Build and Push rabbitmq Image
+      # Clone and Build rabbitmq Repository
+      - name: Clone and Build rabbitmq Repository
         run: |
-          docker build -f rabbitmq/Dockerfile.rabbitmq -t dushess/prolog-queue-communication:rabbitmq .
+          git clone https://github.com/username/rabbitmq-repo.git rabbitmq
+          cd rabbitmq
+          docker build -f Dockerfile.rabbitmq -t dushess/prolog-queue-communication:rabbitmq .
           docker push dushess/prolog-queue-communication:rabbitmq
