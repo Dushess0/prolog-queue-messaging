@@ -12,8 +12,7 @@ services:
 
   # Define the writer service
   writer:
-    build:
-      dockerfile: ../Dockerfile.prolog
+    image: dushess/prolog-queue-communication:base
     container_name: writer
     depends_on:
       - stomp-broker
@@ -29,8 +28,7 @@ services:
 
   # Define the reader service
   reader:
-    build:
-      dockerfile: ../Dockerfile.prolog
+    image: dushess/prolog-queue-communication:base
     container_name: reader
     depends_on:
       - stomp-broker

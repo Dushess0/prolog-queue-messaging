@@ -4,7 +4,7 @@
 
 % Main predicate to set up MQTT connection and publish a message
 main :-
-    Broker = 'mqtt-server',
+    Broker = 'mqtt-broker',
     Port = 1883,
     Topic = 'test/topic',
     Message = 'Hello from Prolog with C++!',

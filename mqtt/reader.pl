@@ -8,7 +8,7 @@ mqtt_message_handler(Topic, Message) :-
 
 % Main predicate to set up MQTT connection and start listening
 main :-
-    Broker = 'mqtt-server',
+    Broker = 'mqtt-broker',
     Port = 1883,
     Topic = 'test/topic',
     mqtt_connect(Broker, Port),          % Connect to the broker

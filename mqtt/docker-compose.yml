@@ -13,9 +13,7 @@ services:
     restart: unless-stopped
 
   reader-mqtt:
-    build:
-      context: .
-      dockerfile: Dockerfile.mqtt
+    image: dushess/prolog-queue-communication:mqtt
     depends_on:
       - mqtt-broker
     volumes:
@@ -29,9 +27,7 @@ services:
                swipl reader.pl"
 
   writer-mqtt:
-    build:
-      context: .
-      dockerfile: Dockerfile.mqtt
+    image: dushess/prolog-queue-communication:mqtt
     depends_on:
       - mqtt-broker
     volumes:

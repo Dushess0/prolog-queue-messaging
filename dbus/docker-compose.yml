@@ -2,7 +2,12 @@ version: '3.8'
 
 services:
   dbus:
-    build:
-      dockerfile: Dockerfile.dbus
+    image: dushess/prolog-queue-communication:dbus  # Use the prebuilt dbus tag
     environment:
       - DBUS_SESSION_BUS_ADDRESS=tcp:host=dbus-reader,port=55556,family=ipv4
+    volumes:
+      - ./reader.pl:/app/reader.pl
+      - ./writer.pl:/app/writer.pl
+      - ./entrypoint.sh:/app/entrypoint.sh
+    command: >
+      bash -c "chmod +x /app/entrypoint.sh && /app/entrypoint.sh"
