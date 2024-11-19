@@ -49,9 +49,3 @@ jobs:
           docker build -f Dockerfile.rabbitmq -t dushess/prolog-queue-communication:rabbitmq .
           docker push dushess/prolog-queue-communication:rabbitmq
 
-      # Build and Push stomp Image
-      - name: Build and Push stomp Image
-        run: |
-          cd stomp
-          docker build -f Dockerfile.stomp -t dushess/prolog-queue-communication:stomp .
-          docker push dushess/prolog-queue-communication:stomp
