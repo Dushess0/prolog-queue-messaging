@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the main repository
-      - name: Checkout main repository
+      # Checkout the repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       # Log in to Docker Hub
@@ -28,26 +28,26 @@ jobs:
           docker build -f Dockerfile.prolog -t dushess/prolog-queue-communication:base .
           docker push dushess/prolog-queue-communication:base
 
-      # Clone and Build dbus Repository
-      - name: Clone and Build dbus Repository
+      # Build and Push dbus Image
+      - name: Build and Push dbus Image
         run: |
-          git clone https://github.com/username/dbus-repo.git dbus
-          cd dbus
-          docker build -f Dockerfile.dbus -t dushess/prolog-queue-communication:dbus .
+          docker build -f dbus/Dockerfile.dbus -t dushess/prolog-queue-communication:dbus .
           docker push dushess/prolog-queue-communication:dbus
 
-      # Clone and Build mqtt Repository
-      - name: Clone and Build mqtt Repository
+      # Build and Push mqtt Image
+      - name: Build and Push mqtt Image
         run: |
-          git clone https://github.com/username/mqtt-repo.git mqtt
-          cd mqtt
-          docker build -f Dockerfile.mqtt -t dushess/prolog-queue-communication:mqtt .
+          docker build -f mqtt/Dockerfile.mqtt -t dushess/prolog-queue-communication:mqtt .
           docker push dushess/prolog-queue-communication:mqtt
 
-      # Clone and Build rabbitmq Repository
-      - name: Clone and Build rabbitmq Repository
+      # Build and Push rabbitmq Image
+      - name: Build and Push rabbitmq Image
         run: |
-          git clone https://github.com/username/rabbitmq-repo.git rabbitmq
-          cd rabbitmq
-          docker build -f Dockerfile.rabbitmq -t dushess/prolog-queue-communication:rabbitmq .
+          docker build -f rabbitmq/Dockerfile.rabbitmq -t dushess/prolog-queue-communication:rabbitmq .
           docker push dushess/prolog-queue-communication:rabbitmq
+
+      # Build and Push stomp Image
+      - name: Build and Push stomp Image
+        run: |
+          docker build -f stomp/Dockerfile.stomp -t dushess/prolog-queue-communication:stomp .
+          docker push dushess/prolog-queue-communication:stomp
