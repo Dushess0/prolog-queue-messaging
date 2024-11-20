@@ -1,33 +1,48 @@
-FROM swipl:latest
+# Start from the D-Bus library base image
+FROM dushess/prolog-queue-communication:dbus AS builder
 
-RUN apt-get update && apt-get install -y \
-    librabbitmq-dev \
-    libdbus-1-dev \
-    dbus \
-    make \
-    g++
+# Install build dependencies for Apache Qpid Proton
+RUN apk update && \
+    apk add --no-cache \
+        build-base \
+        cmake \
+        git \
+        wget \
+        pkgconfig \
+        openssl-dev \
+        linux-headers \
+        util-linux-dev \
+        python3 \
+        py3-pip
 
+# Set the working directory
 WORKDIR /app
 
-COPY ../rabbitmq/src /app/src/rabbitmq
-COPY ../rabbitmq/Makefile /app/src/rabbitmq/
+# Clone and build Apache Qpid Proton
+RUN git clone https://github.com/apache/qpid-proton.git && \
+    cd qpid-proton && \
+    mkdir build && \
+    cd build && \
+    cmake -DBUILD_CPP=ON -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SKIP_RPATH=ON .. && \
+    make -j$(nproc) && \
+    make install
 
-COPY ../dbus/source /app/src/dbus
-COPY ../dbus/Makefile /app/src/dbus/
+# Copy all project files into the container
+COPY . /app/
 
-COPY ../dbus/dbus-session.conf /etc/dbus-1/session.conf
-COPY ../dbus/dbus-system.conf /etc/dbus-1/system.conf
+# Compile the project with both D-Bus and MQTT support
+RUN make all
 
-WORKDIR /app/src/rabbitmq
-RUN make
+# Final runtime stage
+FROM dushess/prolog-queue-communication:dbus AS runtime
 
-WORKDIR /app/src/dbus
-RUN make
-
-ENV LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/x86_64-linux/:/usr/lib/
-
-COPY rabbitmq_dbus.pl /app/reader.pl
-
+# Set the working directory
 WORKDIR /app
 
-CMD ["swipl", "reader.pl"]
+# Copy compiled files and libraries from the builder stage
+COPY --from=builder /usr/local/lib /usr/local/lib
+COPY --from=builder /usr/local/lib64 /usr/local/lib64
+COPY --from=builder /app /app
+
+# Set the LD_LIBRARY_PATH to include necessary libraries
+ENV LD_LIBRARY_PATH="/usr/local/lib:/usr/local/lib64:/usr/lib/swi-prolog/lib/x86_64-linux:$LD_LIBRARY_PATH"
