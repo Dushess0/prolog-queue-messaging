@@ -2,37 +2,61 @@ version: '3.8'
 
 services:
   rabbitmq:
-    image: rabbitmq:3-management  # RabbitMQ image with management console
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    command: >
+      bash -c "rabbitmq-plugins enable --offline rabbitmq_amqp1_0 &&
+               rabbitmq-server"
     ports:
-      - "5672:5672"               # Default RabbitMQ port
-      - "15672:15672"             # Management console port
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-net
 
   prolog-reader:
-    build:
-      context: .
-      dockerfile: Dockerfile.rabbitmq
+    image: dushess/prolog-queue-communication:rabbitmq
+    container_name: prolog-reader
     working_dir: /app
     command: >
       bash -c "until nc -z rabbitmq 5672; do
                 echo 'Waiting for RabbitMQ...';
-                sleep 1;
+                sleep 5;
                done;
                echo 'RabbitMQ is up!';
                swipl reader.pl"
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-net
+    volumes:
+      - ./reader.pl:/app/reader.pl 
 
   prolog-writer:
-    build:
-      context: .
-      dockerfile: Dockerfile.rabbitmq
+    image: dushess/prolog-queue-communication:rabbitmq
+    container_name: prolog-writer
     working_dir: /app
     command: >
       bash -c "until nc -z rabbitmq 5672; do
                 echo 'Waiting for RabbitMQ...';
-                sleep 1;
+                sleep 5;
                done;
                echo 'RabbitMQ is up!';
+               sleep 5;
                swipl writer.pl"
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-net
+    volumes:
+      - ./writer.pl:/app/writer.pl 
+
+networks:
+  app-net:
+    driver: bridge

@@ -1,35 +1,46 @@
 # Start from the base Prolog image
-FROM dushess/prolog-queue-communication:base AS rabbitmq-builder
+FROM dushess/prolog-queue-communication:base AS builder
 
-
-# Install RabbitMQ C development libraries
-RUN apk add --no-cache \
-    rabbitmq-c-dev
-
-# Optionally, install Valgrind or any other tools you need
-RUN apk add --no-cache valgrind
-
-# Copy the application files into the container
-COPY . /app/
-
-# Compile the C++ code using the provided Makefile
-WORKDIR /app
-RUN make
-
-# Set the LD_LIBRARY_PATH to include SWI-Prolog and RabbitMQ libraries
-ENV LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/x86_64-linux/:/usr/lib/
-
-# Final stage
-FROM rabbitmq-builder AS rabbitmq-runtime
-
-# Copy the compiled files from the build stage
-COPY --from=rabbitmq-builder /app /app
+# Install build dependencies
+RUN apk update && \
+    apk add --no-cache \
+        build-base \
+        cmake \
+        git \
+        wget \
+        pkgconfig \
+        openssl-dev \
+        linux-headers \
+        util-linux-dev \
+        python3 \
+        py3-pip
 
 # Set the working directory
 WORKDIR /app
 
+# Clone and build Apache Qpid Proton
+RUN git clone https://github.com/apache/qpid-proton.git && \
+    cd qpid-proton && \
+    mkdir build && \
+    cd build && \
+    cmake -DBUILD_CPP=ON -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SKIP_RPATH=ON .. && \
+    make -j$(nproc) && \
+    make install
+
+# Set the library path
+ENV LD_LIBRARY_PATH="/usr/local/lib:/usr/local/lib64:/usr/lib/swi-prolog/lib/x86_64-linux:$LD_LIBRARY_PATH"
+
+# Copy all project files into the container
 COPY . /app/
 
+# Build the project using the Makefile
+RUN make
 
-# Run the Prolog script (replace with the appropriate script as needed)
+# Final stage
+FROM builder AS runtime
+
+# Set the working directory
+WORKDIR /app
+
+# Run the Prolog script
 CMD ["swipl", "rabbitmq_prolog.pl"]
