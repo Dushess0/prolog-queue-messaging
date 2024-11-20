@@ -19,6 +19,7 @@ extern "C" {
 // Utility functions
 void print_dbus_message_arguments(DBusMessageIter *args);
 const char* dbus_message_type_to_string(int type);
-void call_prolog_callback(const char* interface, const char* member, const char* path);
+void call_prolog_callback(const char *interface, const char *member, const char *path, const PlTerm &args);
+
 
 #endif // DBUS_WRAPPER_H
